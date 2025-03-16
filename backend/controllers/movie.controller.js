@@ -12,7 +12,7 @@ export async function getTrendingMovie(req, res) {
 
 export async function getNowPlayingMovies(req, res) {
 	try {
-		const data = await fetchFromTMDB("https://api.themoviedb.org/3/movie/now_playing");
+		const data = await fetchFromTMDB("https://api.themoviedb.org/3/movie/now_playing?language=en-US");
 		res.json({ success: true, content: data.results });
 	} catch (error) {
 		console.log(error);
