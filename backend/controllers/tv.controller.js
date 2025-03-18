@@ -86,11 +86,22 @@ export async function getTvsByCategory(req, res) {
 }
 
 export async function getTvKeywords(req, res) {
-	const { id } = req.params;
-	try {
-		const data = await fetchFromTMDB(`https://api.themoviedb.org/3/tv/${id}/keywords`);
-		res.status(200).json({ success: true, content: data.results });
-	} catch (error) {
-		res.status(500).json({ success: false, message: "Internal Server Error" });
-	}
+    const { id } = req.params;
+    try {
+        const data = await fetchFromTMDB(`https://api.themoviedb.org/3/tv/${id}/keywords`);
+
+        // Lấy danh sách keywords nếu có
+        const keywords = data.results.length > 0 ? data.results : null;
+
+        res.json({
+            success: true,
+            keywords: keywords
+        });
+    } catch (error) {
+        if (error.message.includes("404")) {
+            return res.status(404).send(null);
+        }
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
 }
+
