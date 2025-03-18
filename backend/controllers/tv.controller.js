@@ -21,23 +21,17 @@ export async function getPopularTv(req, res) {
 }
 
 export async function getTvTrailers(req, res) {
-    const { id } = req.params;
-    try {
-        const data = await fetchFromTMDB(`https://api.themoviedb.org/3/tv/${id}/videos?language=en-US`);
+	const { id } = req.params;
+	try {
+		const data = await fetchFromTMDB(`https://api.themoviedb.org/3/tv/${id}/videos?language=en-US`);
+		res.json({ success: true, trailer: data.results[0] });
+	} catch (error) {
+		if (error.message.includes("404")) {
+			return res.status(404).send(null);
+		}
 
-        // Tìm video có type là "Trailer"
-        const trailer = data.results.find(video => video.type === "Trailer");
-
-        res.json({ 
-            success: true, 
-            trailer: trailer || null // Nếu không có trailer thì trả về null
-        });
-    } catch (error) {
-        if (error.message.includes("404")) {
-            return res.status(404).send(null);
-        }
-        res.status(500).json({ success: false, message: "Internal Server Error" });
-    }
+		res.status(500).json({ success: false, message: "Internal Server Error" });
+	}
 }
 
 
@@ -86,29 +80,13 @@ export async function getTvsByCategory(req, res) {
 }
 
 export async function getTvKeywords(req, res) {
-    const { id } = req.params;
-    try {
-        const data = await fetchFromTMDB(`https://api.themoviedb.org/3/tv/${id}/keywords`);
-
-        // Kiểm tra nếu không có results hoặc results rỗng
-        if (!data || !data.results || data.results.length === 0) {
-            return res.status(200).json({
-                success: true,
-                keywords: []
-            });
-        }
-
-        res.json({
-            success: true,
-            keywords: data.results
-        });
-    } catch (error) {
-        console.error("Lỗi khi lấy keywords:", error); // ✅ Log lỗi để debug
-        if (error.message.includes("404")) {
-            return res.status(404).json({ success: false, message: "Not Found" });
-        }
-        res.status(500).json({ success: false, message: "Internal Server Error" });
-    }
+	const { id } = req.params;
+	try {
+		const data = await fetchFromTMDB(`https://api.themoviedb.org/3/tv/${id}/keywords`);
+		res.status(200).json({ success: true, content: data.results });
+	} catch (error) {
+		res.status(500).json({ success: false, message: "Internal Server Error" });
+	}
 }
 
 
