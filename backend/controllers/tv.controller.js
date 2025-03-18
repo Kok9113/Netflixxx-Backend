@@ -21,18 +21,25 @@ export async function getPopularTv(req, res) {
 }
 
 export async function getTvTrailers(req, res) {
-	const { id } = req.params;
-	try {
-		const data = await fetchFromTMDB(`https://api.themoviedb.org/3/tv/${id}/videos?language=en-US`);
-		res.json({ success: true, trailers: data.results });
-	} catch (error) {
-		if (error.message.includes("404")) {
-			return res.status(404).send(null);
-		}
+    const { id } = req.params;
+    try {
+        const data = await fetchFromTMDB(`https://api.themoviedb.org/3/tv/${id}/videos?language=en-US`);
 
-		res.status(500).json({ success: false, message: "Internal Server Error" });
-	}
+        // Tìm video có type là "Trailer"
+        const trailer = data.results.find(video => video.type === "Trailer");
+
+        res.json({ 
+            success: true, 
+            trailer: trailer || null // Nếu không có trailer thì trả về null
+        });
+    } catch (error) {
+        if (error.message.includes("404")) {
+            return res.status(404).send(null);
+        }
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
 }
+
 
 export async function getTvDetails(req, res) {
 	const { id } = req.params;
