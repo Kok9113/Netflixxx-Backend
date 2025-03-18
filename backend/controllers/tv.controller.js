@@ -90,18 +90,25 @@ export async function getTvKeywords(req, res) {
     try {
         const data = await fetchFromTMDB(`https://api.themoviedb.org/3/tv/${id}/keywords`);
 
-        // Lấy danh sách keywords nếu có
-        const keywords = data.results.length > 0 ? data.results : null;
+        // Kiểm tra nếu không có results hoặc results rỗng
+        if (!data || !data.results || data.results.length === 0) {
+            return res.status(200).json({
+                success: true,
+                keywords: []
+            });
+        }
 
         res.json({
             success: true,
-            keywords: keywords
+            keywords: data.results
         });
     } catch (error) {
+        console.error("Lỗi khi lấy keywords:", error); // ✅ Log lỗi để debug
         if (error.message.includes("404")) {
-            return res.status(404).send(null);
+            return res.status(404).json({ success: false, message: "Not Found" });
         }
         res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 }
+
 
