@@ -82,7 +82,7 @@ export async function getTvsByCategory(req, res) {
 export async function getTvKeywords(req, res) {
 	const { id } = req.params;
 	try {
-		const data = await fetchFromTMDB(`https://api.themoviedb.org/3/tv/${id}/keywords`);
+		const data = await fetchFromTMDB(`https://api.themoviedb.org/3/tv/${id}/keywords?language=en-US`);
 		if (!data || !data.results) {
 			return res.status(404).json({ success: false, message: "Keywords not found" });
 		}
